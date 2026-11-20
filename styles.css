@@ -52,7 +52,9 @@ h1, h2, h3, p, figure { margin: 0; }
 .button:hover { background: #f3f7fd; border-color: #b8c9e6; }
 .paper-link { margin-top: 15px; padding-inline: 13px; }
 .paper-link svg { width: 17px; height: 17px; }
-.paper-link span:not(.sr-only) { color: var(--quiet); font-size: .72rem; font-weight: 650; letter-spacing: .035em; }
+.paper-link span { color: var(--quiet); font-size: .72rem; font-weight: 650; letter-spacing: .035em; }
+.paper-link:disabled { color: #69788a; background: #f4f6f9; border-color: #e2e8f0; cursor: not-allowed; }
+.paper-link:disabled span { color: inherit; }
 
 .wide { max-width: var(--wide); width: calc(100% - 64px); margin-inline: auto; }
 .reading { max-width: var(--reading); width: calc(100% - 64px); margin-inline: auto; }
