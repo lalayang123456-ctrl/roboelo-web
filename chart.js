@@ -143,18 +143,34 @@ function drawFrontier() {
   const style = { fill: 'none', stroke: color.blue, 'stroke-width': 2.5, 'stroke-linecap': 'round' };
   path(points, { ...style, 'stroke-linejoin': 'round', 'pointer-events': 'none' });
 
+  const dateSpan = start => `${month(eras.nodes[start][0])} to ${month(eras.nodes[start + 1][0])}`;
+  function addSegment(id, start, describe) {
+    const [from, to] = points.slice(start, start + 2);
+    const segment = [from, to];
+    const center = [(from[0] + to[0]) / 2, (from[1] + to[1]) / 2];
+    const { group } = target(id, center, describe);
+    path(segment, { ...style, class: 'line-highlight', 'stroke-width': 12, 'stroke-opacity': .19 }, group);
+    path(segment, { ...style, stroke: 'transparent', 'stroke-width': 14, class: 'frontier-hit' }, group);
+    return group;
+  }
+
   eraNames.forEach((name, index) => {
     const start = index * 2;
-    const segment = points.slice(start, start + 2);
-    const describe = () => ({
+    if (index > 0) {
+      const previous = eraNames[index - 1];
+      addSegment(`frontier-connector-${index - 1}`, start - 1, () => ({
+        title: `${previous} to ${name} · SOTA frontier`,
+        summary: dateSpan(start - 1),
+        preview: 'Connector between eras',
+        notes: [`Connects the last SOTA release of the ${previous} era to the first of the ${name} era. Each era’s pace is measured between its own first and last SOTA releases.`],
+      }));
+    }
+    const group = addSegment(`frontier-${index}`, start, () => ({
       title: `${name} era · SOTA frontier`,
       summary: `+${elo(eras.rates[index])} per year`,
-      notes: [`The pace comes from the first and last release-date records in this era (${month(eras.nodes[start][0])} to ${month(eras.nodes[start + 1][0])}).`],
-    });
-    const center = [(segment[0][0] + segment[1][0]) / 2, (segment[0][1] + segment[1][1]) / 2];
-    const { group } = target(`frontier-${index}`, center, describe);
-    path(segment, { ...style, class: 'line-highlight', 'stroke-width': 12, opacity: .19, 'stroke-opacity': .19 }, group);
-    path(segment, { ...style, stroke: 'transparent', 'stroke-width': 14 }, group);
+      preview: dateSpan(start),
+      notes: [`The pace comes from the first and last release-date records in this era (${dateSpan(start)}).`],
+    }));
     const left = x(index === 0 ? firstYear : eras.breaks[index - 1]);
     const right = x(index === 2 ? forecast.cutoff : eras.breaks[index]);
     const cap = index === 0 ? 'VLA ERA' : index === 1 ? 'WAM' : 'AGENT';
