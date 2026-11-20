@@ -9,8 +9,8 @@ const touchOnly = matchMedia('(hover: none)');
 const { policies, benchmarks, eras, forecast } = figureData;
 
 const width = 1060;
-const height = 404;
-const plot = { left: 38, right: 999, top: 47, bottom: 367 };
+const height = 468;
+const plot = { left: 38, right: 999, top: 47, bottom: height - 37 };
 const firstYear = 2022.75;
 const eloMax = 4400;
 const x = year => plot.left + (year - firstYear) * (plot.right - plot.left) / (forecast.end - firstYear);
@@ -72,6 +72,7 @@ function target(id, position, describe, parent) {
 
 function drawAxes() {
   const mobileScale = document.querySelector('#mobile-scale');
+  mobileScale.setAttribute('viewBox', `0 0 48 ${height}`);
   const edges = [firstYear, ...eras.breaks, forecast.cutoff, forecast.end];
   const periods = ['vla', 'wam', 'agent', 'forecast'];
   periods.forEach((period, index) => {
