@@ -9,7 +9,7 @@ const touchOnly = matchMedia('(hover: none)');
 const { policies, benchmarks, eras, forecast } = figureData;
 
 const width = 1060;
-const height = 468;
+const height = width * 9 / 16;
 const plot = { left: 38, right: 999, top: 47, bottom: height - 37 };
 const firstYear = 2022.75;
 const eloMax = 4400;
@@ -121,7 +121,14 @@ function drawBenchmarks() {
     }
     const top = y(benchmark.density.at(-1)[0]);
     if (benchmark.side === 'both') {
-      label(benchmark.name, center, top - (index === 0 ? 31 : 10), 'benchmark-label target-label', 'middle', group);
+      let labelY = top - 10;
+      if (benchmark.id === 'LIBERO') {
+        const [[firstYear, firstElo], [lastYear, lastElo]] = eras.nodes;
+        const progress = (benchmark.year - firstYear) / (lastYear - firstYear);
+        const frontierY = y(firstElo + progress * (lastElo - firstElo));
+        labelY = Math.min(labelY, frontierY - 10);
+      }
+      label(benchmark.name, center, labelY, 'benchmark-label target-label', 'middle', group);
     } else {
       const clean = benchmark.side === 'left';
       const twinTop = y(benchmarks[3].density.at(-1)[0]);
