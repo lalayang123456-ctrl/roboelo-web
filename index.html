@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="RoboElo measures the progress of robot manipulation policies and the difficulty of their benchmarks on one Elo scale.">
+  <meta name="theme-color" content="#ffffff">
+  <title>RoboElo — How Much Has Physical AI Progressed?</title>
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="assets/figure-data.js"></script>
+  <script defer src="chart.js"></script>
+</head>
+<body id="top">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="wordmark" href="#top"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>RoboElo</a>
+      <nav aria-label="Page sections">
+        <a href="#abstract">Abstract</a>
+        <a href="#findings">Findings</a>
+        <a href="#method">Method</a>
+        <a href="#bibtex">BibTeX</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero" aria-labelledby="paper-title">
+      <h1 id="paper-title">How Much Has Physical<br class="desktop-break"> AI Progressed?</h1>
+      <p class="subtitle">A Meta-Analysis on Robot Manipulation Benchmarks<br class="desktop-break"> vs. VLA, WAM, and LLM Agents</p>
+      <p class="authors">Anonymous Authors</p>
+      <a class="button paper-link" href="assets/roboelo-paper.pdf" target="_blank" rel="noopener">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3H6.5A1.5 1.5 0 0 0 5 4.5v15A1.5 1.5 0 0 0 6.5 21h11a1.5 1.5 0 0 0 1.5-1.5V9z"/><path d="M13 3v6h6M8.5 13.3h7m-7 3.2h5"/></svg>
+        Paper <span>PDF</span><span class="sr-only"> (opens in a new tab)</span>
+      </a>
+    </section>
+
+    <figure class="main-figure wide" id="figure-1" aria-labelledby="figure-title" aria-describedby="figure-caption">
+      <div class="figure-header">
+        <div>
+          <p class="eyebrow">Interactive figure 1</p>
+          <h2 id="figure-title">Robot policy progress on one Elo scale</h2>
+        </div>
+        <p class="figure-hint" id="plot-instructions"><span aria-hidden="true" class="pointer-icon">◎</span> <span id="pointer-hint">Hover to explore · Click to pin</span><span class="sr-only">. Keyboard: Tab into the chart, use arrow keys to move between items, then press Enter to pin a selection.</span></p>
+      </div>
+      <div class="plot-shell">
+        <div class="plot-scroll" id="plot-scroll">
+          <div class="plot-stage" id="plot-stage">
+            <svg id="elo-plot" aria-labelledby="plot-title plot-description" aria-describedby="plot-instructions" role="group"></svg>
+          </div>
+        </div>
+        <svg class="mobile-scale" id="mobile-scale" viewBox="0 0 48 404" aria-hidden="true"></svg>
+        <div id="plot-tooltip" class="plot-tooltip" aria-hidden="true" hidden></div>
+      </div>
+      <p class="scroll-hint">Swipe the chart to see later years.</p>
+      <div class="legend" aria-label="Chart legend">
+        <span><i class="key dot" aria-hidden="true"></i>VLA</span>
+        <span><i class="key square" aria-hidden="true"></i>WAM</span>
+        <span><i class="key triangle" aria-hidden="true"></i>LLM agent</span>
+        <span><i class="key external" aria-hidden="true"></i>Claude, inferred</span>
+        <span><i class="key frontier" aria-hidden="true"></i>SOTA</span>
+        <span><i class="key forecast" aria-hidden="true"></i>Forecast</span>
+        <span><i class="key violin" aria-hidden="true"></i>Benchmark tasks</span>
+      </div>
+      <div class="selection" id="selection" hidden>
+        <div id="selection-content" aria-live="polite"></div>
+        <button id="clear-selection" type="button" class="clear-button" aria-label="Clear selected chart item">×</button>
+      </div>
+      <noscript><p class="noscript">Enable JavaScript to explore the chart. Figure 1 is also available in the paper PDF.</p></noscript>
+      <figcaption id="figure-caption">Policies are positioned by release date and general ability. Benchmark violins show task difficulty at release, with a line at the median. Dark markers indicate state of the art at release. The dashed line extends the agent-era pace, with two 95% uncertainty bands.</figcaption>
+    </figure>
+
+    <section class="reading section" id="abstract" aria-labelledby="abstract-title">
+      <h2 id="abstract-title">Abstract</h2>
+      <p>Robot manipulation policies are improving quickly, but each simulation benchmark distinguishes them within a limited range. Older benchmarks saturate, while on newer ones most policies reach only single-digit success rates. RoboElo links benchmarks through the policies they share, placing policy abilities and task difficulties on one Elo scale and making comparisons across benchmarks and time possible.</p>
+      <p>We apply RoboElo to 44 policies released between December 2022 and October 2026 across LIBERO, SimplerEnv, RoboTwin 2.0, and RoboDojo, covering 212 test cases and 395,092 trials. On this scale, a policy released 8.5 months later has, on average, twice the odds of success on the same task. In the last six months, the best policy improved about five times as much as in an average six-month period since 2022. Benchmark difficulty rises about twice as fast as average policy ability, but if the recent frontier pace continues, RoboDojo could reach the paper’s saturation threshold by mid-2027.</p>
+    </section>
+
+    <section class="section wide findings" id="findings" aria-labelledby="findings-title">
+      <h2 id="findings-title">Key findings</h2>
+      <div class="findings-grid">
+        <article>
+          <p class="finding-number">8.5 <span>months</span></p>
+          <h3>Time for average odds to double</h3>
+          <p>Policies released 8.5 months apart differ, on average, by a factor of two in their odds of success on the same task.</p>
+        </article>
+        <article>
+          <p class="finding-number">~5<span>×</span></p>
+          <h3>Faster gains at the frontier</h3>
+          <p>The frontier gained about five times as much Elo in the last six months as in an average six-month period since 2022.</p>
+        </article>
+        <article>
+          <p class="finding-number">Mid<span>-</span>2027</p>
+          <h3>Projected RoboDojo saturation</h3>
+          <p>At the agent-era pace, the frontier is projected to reach an expected score of at least 50% on 90% of RoboDojo’s tasks.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section method" id="method" aria-labelledby="method-title">
+      <div class="reading">
+        <h2 id="method-title">The RoboElo method</h2>
+        <p>RoboElo fits one model to per-task results across benchmarks. Policies evaluated on more than one benchmark link their scales. The model estimates each policy’s general ability, its adjustment for a particular setting, and the difficulty of each test case. When a policy’s level on a setting matches a task’s difficulty, its expected score is 50%.</p>
+      </div>
+      <figure class="method-figure wide">
+        <img src="assets/roboelo-method.png" width="1940" height="632" alt="Three panels show sparse observed scores, one joint model filling in missing scores, and policy levels and task difficulties aligned on a single Elo scale." loading="lazy" decoding="async">
+        <figcaption><strong>Figure 4.</strong> From sparse per-task results to one Elo scale. <a href="assets/roboelo-method.png" class="enlarge-method" target="_blank" rel="noopener">Open full-size figure<span class="sr-only"> (opens in a new tab)</span></a></figcaption>
+      </figure>
+    </section>
+
+    <section class="section reading citation" id="bibtex" aria-labelledby="bibtex-title">
+      <div class="citation-header">
+        <h2 id="bibtex-title">BibTeX</h2>
+        <button type="button" class="button copy-button" id="copy-bibtex">Copy BibTeX</button>
+      </div>
+      <pre><code id="bibtex-text">@unpublished{anonymous2026roboelo,
+  title = {How Much Has Physical {AI} Progressed? A Meta-Analysis on
+           Robot Manipulation Benchmarks vs. {VLA}, {WAM}, and {LLM} Agents},
+  author = {{Anonymous Authors}},
+  year = {2026},
+  note = {Anonymous manuscript}
+}</code></pre>
+      <p class="sr-only" id="copy-status" aria-live="polite"></p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="header-inner"><span>RoboElo</span><a href="#top">Back to top</a></div>
+  </footer>
+</body>
+</html>
