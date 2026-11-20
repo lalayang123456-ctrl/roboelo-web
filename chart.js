@@ -141,6 +141,10 @@ function drawBenchmarks() {
 function drawFrontier() {
   const points = eras.nodes.map(([year, score]) => [x(year), y(score)]);
   const style = { fill: 'none', stroke: color.blue, 'stroke-width': 2.5, 'stroke-linecap': 'round' };
+  const vlaHighlight = path(points.slice(0, 3), {
+    ...style, 'stroke-width': 12, 'stroke-opacity': .19, 'stroke-linejoin': 'round',
+    opacity: 0, 'pointer-events': 'none', 'aria-hidden': 'true',
+  });
   path(points, { ...style, 'stroke-linejoin': 'round', 'pointer-events': 'none' });
 
   const dateSpan = start => `${month(eras.nodes[start][0])} to ${month(eras.nodes[start + 1][0])}`;
@@ -148,8 +152,12 @@ function drawFrontier() {
     const [from, to] = points.slice(start, start + 2);
     const segment = [from, to];
     const center = [(from[0] + to[0]) / 2, (from[1] + to[1]) / 2];
-    const { group } = target(id, center, describe);
-    path(segment, { ...style, class: 'line-highlight', 'stroke-width': 12, 'stroke-opacity': .19 }, group);
+    const item = target(id, center, describe);
+    const { group } = item;
+    item.highlightVla = start < 2;
+    if (!item.highlightVla) {
+      path(segment, { ...style, class: 'line-highlight', 'stroke-width': 12, 'stroke-opacity': .19 }, group);
+    }
     path(segment, { ...style, stroke: 'transparent', 'stroke-width': 14, class: 'frontier-hit' }, group);
     return group;
   }
@@ -176,6 +184,7 @@ function drawFrontier() {
     const cap = index === 0 ? 'VLA ERA' : index === 1 ? 'WAM' : 'AGENT';
     label(cap, (left + right) / 2, 35, 'era-label target-label', 'middle', group);
   });
+  return vlaHighlight;
 }
 
 function drawForecast() {
@@ -317,6 +326,7 @@ function hit(item, event) {
 
 function highlight() {
   const active = preview || pinned;
+  vlaFrontierHighlight.setAttribute('opacity', active?.item.highlightVla ? 1 : 0);
   for (const item of targets) {
     item.group.classList.toggle('is-active', item === active?.item);
     if (item.marker && item === active?.item) {
@@ -477,7 +487,7 @@ element('desc', { id: 'plot-description' }, 'Interactive chart of 44 fitted poli
 drawAxes();
 drawForecast();
 drawBenchmarks();
-drawFrontier();
+const vlaFrontierHighlight = drawFrontier();
 drawAnnotations();
 drawPolicies();
 enableInteractions();
