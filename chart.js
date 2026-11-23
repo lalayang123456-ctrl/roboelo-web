@@ -141,7 +141,7 @@ function drawBenchmarks() {
 function drawFrontier() {
   const points = eras.nodes.map(([year, score]) => [x(year), y(score)]);
   const style = { fill: 'none', stroke: color.blue, 'stroke-width': 2.5, 'stroke-linecap': 'round' };
-  const vlaHighlight = path(points.slice(0, 3), {
+  const vlaHighlight = path(points.slice(0, 2), {
     ...style, 'stroke-width': 12, 'stroke-opacity': .19, 'stroke-linejoin': 'round',
     opacity: 0, 'pointer-events': 'none', 'aria-hidden': 'true',
   });
@@ -154,7 +154,7 @@ function drawFrontier() {
     const center = [(from[0] + to[0]) / 2, (from[1] + to[1]) / 2];
     const item = target(id, center, describe);
     const { group } = item;
-    item.highlightVla = start < 2;
+    item.highlightVla = start === 0;
     if (!item.highlightVla) {
       path(segment, { ...style, class: 'line-highlight', 'stroke-width': 12, 'stroke-opacity': .19 }, group);
     }
@@ -162,22 +162,18 @@ function drawFrontier() {
     return group;
   }
 
+  // One continuous line through the first SOTA of each era and the latest SOTA, so it bends at LingBot-VA and
+  // GPT-6-Astra; each era's pace runs to the next era's first SOTA (the agent era: to the latest SOTA).
   eraNames.forEach((name, index) => {
-    const start = index * 2;
-    if (index > 0) {
-      const previous = eraNames[index - 1];
-      addSegment(`frontier-connector-${index - 1}`, start - 1, () => ({
-        title: `${previous} to ${name} · SOTA frontier`,
-        summary: dateSpan(start - 1),
-        preview: 'Connector between eras',
-        notes: [`Connects the last SOTA release of the ${previous} era to the first of the ${name} era. Each era’s pace is measured between its own first and last SOTA releases.`],
-      }));
-    }
+    const start = index;
+    const last = index === eraNames.length - 1;
     const group = addSegment(`frontier-${index}`, start, () => ({
       title: `${name} era · SOTA frontier`,
       summary: `+${elo(eras.rates[index])} per year`,
       preview: dateSpan(start),
-      notes: [`The pace comes from the first and last release-date records in this era (${dateSpan(start)}).`],
+      notes: [last
+        ? `The pace runs from this era’s first SOTA release to the latest one (${dateSpan(start)}).`
+        : `The pace runs from this era’s first SOTA release to the first of the ${eraNames[index + 1]} era (${dateSpan(start)}).`],
     }));
     const left = x(index === 0 ? firstYear : eras.breaks[index - 1]);
     const right = x(index === 2 ? forecast.cutoff : eras.breaks[index]);
