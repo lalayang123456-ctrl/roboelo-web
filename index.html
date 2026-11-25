@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="RoboElo measures the progress of robot manipulation policies and the difficulty of their benchmarks on one Elo scale.">
   <meta name="theme-color" content="#ffffff">
-  <title>RoboElo — How Much Has Physical AI Progressed?</title>
+  <title>RoboElo — How Much Has Embodied AI Progressed?</title>
   <link rel="stylesheet" href="styles.css">
   <script defer src="assets/figure-data.js"></script>
   <script defer src="chart.js"></script>
@@ -26,7 +26,7 @@
 
   <main id="main">
     <section class="hero" aria-labelledby="paper-title">
-      <h1 id="paper-title">How Much Has Physical<br class="desktop-break"> AI Progressed?</h1>
+      <h1 id="paper-title">How Much Has Embodied<br class="desktop-break"> AI Progressed?</h1>
       <p class="subtitle">A Meta-Analysis on Robot Manipulation Benchmarks<br class="desktop-break"> vs. VLA, WAM, and LLM Agents</p>
       <p class="authors">Anonymous Authors</p>
       <button class="button paper-link" type="button" disabled>
@@ -56,7 +56,7 @@
       <div class="legend" aria-label="Chart legend">
         <span><i class="key dot" aria-hidden="true"></i>VLA</span>
         <span><i class="key square" aria-hidden="true"></i>WAM</span>
-        <span><i class="key triangle" aria-hidden="true"></i>LLM agent</span>
+        <span><i class="key triangle" aria-hidden="true"></i>LLM Agent</span>
         <span><i class="key external" aria-hidden="true"></i>Claude, inferred</span>
         <span><i class="key frontier" aria-hidden="true"></i>SOTA</span>
         <span><i class="key forecast" aria-hidden="true"></i>Forecast</span>
@@ -67,14 +67,14 @@
         <button id="clear-selection" type="button" class="clear-button" aria-label="Clear selected chart item">×</button>
       </div>
       <noscript><p class="noscript">Enable JavaScript to explore the chart.</p></noscript>
-      <figcaption id="figure-caption">Policies are positioned by release date and general ability. Benchmark violins show task difficulty at release, with a line at the median. Dark markers indicate state of the art at release. The solid frontier bends where each era starts, at LingBot-VA and GPT-6-Astra. The dashed line extends the agent-era pace, with two 95% uncertainty bands.</figcaption>
+      <figcaption id="figure-caption">Policies are positioned by release date and general capability. Benchmark violins show task difficulty at release, with a line at the median. Dark markers indicate SOTA at release. The solid SOTA line bends once, at G0.5 (June 2026), where its pace changes most: about ten times faster since. The dashed line extends the pace since G0.5, with two 95% uncertainty bands.</figcaption>
     </figure>
 
     <section class="reading section" id="abstract" aria-labelledby="abstract-title">
       <h2 id="abstract-title">Abstract</h2>
       <p>
-        Robot manipulation policies are improving quickly, but each simulation benchmark distinguishes them within a limited range. Older benchmarks saturate, while on newer ones most policies reach only single-digit success rates. RoboElo links benchmarks through the policies they share, placing policy abilities and task difficulties on one Elo scale and making comparisons across benchmarks and time possible.
-        We apply RoboElo to 44 policies released between December 2022 and October 2026 across LIBERO, SimplerEnv, RoboTwin 2.0, and RoboDojo, covering 212 test cases and 395,092 trials. On this scale, a policy released 8.5 months later has, on average, twice the odds of success on the same task. In the last six months, the best policy improved about five times as much as in an average six-month period since 2022. Benchmark difficulty rises about twice as fast as average policy ability, but if the recent frontier pace continues, RoboDojo could reach the paper’s saturation threshold by mid-2027.
+        Robot manipulation policies are improving quickly, but each simulation benchmark distinguishes them within a limited range. Older benchmarks saturate, while on newer ones most policies reach only single-digit success rates. RoboElo links benchmarks through the policies they share, placing policy capabilities and task difficulties on one Elo scale and making comparisons across benchmarks and time possible.
+        We apply RoboElo to 44 policies released between December 2022 and October 2026 across LIBERO, SimplerEnv, RoboTwin 2.0, and RoboDojo, covering 212 test cases and 395,092 trials. On this scale, a policy released 8.5 months later has, on average, twice the odds of success on the same task. In the last six months, the best policy improved about five times as much as in an average six-month period since 2022, and since G0.5 (June 2026) the SOTA has risen about ten times as fast as before. Benchmark difficulty rises about twice as fast as average policy capability, but if the SOTA pace since G0.5 continues, RoboDojo could reach the paper’s saturation threshold by September 2027.
       </p>
     </section>
 
@@ -87,14 +87,14 @@
           <p>Policies released 8.5 months apart differ, on average, by a factor of two in their odds of success on the same task.</p>
         </article>
         <article>
-          <p class="finding-number">~5<span>×</span></p>
-          <h3>Faster gains at the frontier</h3>
-          <p>The frontier gained about five times as much Elo in the last six months as in an average six-month period since 2022.</p>
+          <p class="finding-number">~10<span>×</span></p>
+          <h3>Faster SOTA gains since G0.5</h3>
+          <p>Since G0.5 (June 2026), the SOTA has risen about 730 Elo per year, ten times its pace of about 70 Elo per year before.</p>
         </article>
         <article>
-          <p class="finding-number">Mid<span>-</span>2027</p>
+          <p class="finding-number">Sep <span>2027</span></p>
           <h3>Projected RoboDojo saturation</h3>
-          <p>At the agent-era pace, the frontier is projected to reach an expected score of at least 50% on 90% of RoboDojo’s tasks.</p>
+          <p>At the pace since G0.5, the SOTA policy is projected to reach an expected score of at least 50% on 90% of RoboDojo’s tasks.</p>
         </article>
       </div>
     </section>
@@ -102,7 +102,7 @@
     <section class="section method" id="method" aria-labelledby="method-title">
       <div class="reading">
         <h2 id="method-title">The RoboElo method</h2>
-        <p>RoboElo fits one model to per-task results across benchmarks. Policies evaluated on more than one benchmark link their scales. The model estimates each policy’s general ability, its adjustment for a particular setting, and the difficulty of each test case. When a policy’s level on a setting matches a task’s difficulty, its expected score is 50%.</p>
+        <p>RoboElo fits one model to per-task results across benchmarks. Policies evaluated on more than one benchmark link their scales. The model estimates each policy’s general capability, its adjustment for a particular setting, and the difficulty of each test case. When a policy’s level on a setting matches a task’s difficulty, its expected score is 50%.</p>
       </div>
       <figure class="method-figure wide">
         <img src="assets/roboelo-method.png" width="1940" height="632" alt="Three panels show sparse observed scores, one joint model filling in missing scores, and policy levels and task difficulties aligned on a single Elo scale." loading="lazy" decoding="async">
@@ -116,7 +116,7 @@
         <button type="button" class="button copy-button" id="copy-bibtex">Copy BibTeX</button>
       </div>
       <pre><code id="bibtex-text">@unpublished{anonymous2026roboelo,
-  title = {How Much Has Physical {AI} Progressed? A Meta-Analysis on
+  title = {How Much Has Embodied {AI} Progressed? A Meta-Analysis on
            Robot Manipulation Benchmarks vs. {VLA}, {WAM}, and {LLM} Agents},
   author = {{Anonymous Authors}},
   year = {2026},

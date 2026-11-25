@@ -20,7 +20,10 @@ def interval(lo, hi):
 
 
 def export():
-    metadata = json.loads((RESEARCH / "figures/fig1_eras_numbers.json").read_text(encoding="utf-8"))
+    # Since 2026-11-25 the paper's Fig. 1 has two periods split at G0.5 (make_fig1_options.py E2, scheme "g05");
+    # until then three eras (fig1_eras_numbers.json, option E).
+    figure.set_scheme("g05")
+    metadata = json.loads((RESEARCH / "figures/fig1_g05_numbers.json").read_text(encoding="utf-8"))
     ratings = figure.P.MF.rated().dropna(subset=["year"])
     records = {policy for policy, _, _ in metadata["records"]}
     release_rows = pd.read_csv(RESEARCH / "data/policy_release_dates.csv")
@@ -68,9 +71,9 @@ def export():
                 eras=dict(breaks=list(figure.ERA_BREAKS), rates=metadata["k"],
                           nodes=list(zip(*metadata["nodes"]))),
                 forecast=dict(cutoff=figure.X_CUTOFF, x=metadata["x_end"], y=metadata["y_end"],
-                              end=figure.X_CUTOFF + figure.YEARS + 0.1, pace=metadata["k"][2],
-                              tasks=[row[2] for row in metadata["k_in"]],
-                              tasksAndPolicies=[row[2] for row in metadata["k_out"]],
+                              end=figure.X_CUTOFF + figure.YEARS + 0.1, pace=metadata["k"][-1],
+                              tasks=[row[-1] for row in metadata["k_in"]],
+                              tasksAndPolicies=[row[-1] for row in metadata["k_out"]],
                               crossing=metadata["t_need"], crossingInterval=metadata["t_need_range"],
                               needed=metadata["next_needed"]))
     (SITE / "assets/figure-data.js").write_text(

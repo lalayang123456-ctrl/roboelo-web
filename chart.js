@@ -27,8 +27,9 @@ const month = value => {
   return monthFormat.format(new Date(start + (value - year) * (Date.UTC(year + 1, 0, 1) - start)));
 };
 const readableDate = value => (value.length > 7 ? dateFormat : monthFormat).format(new Date(value));
-const eraNames = ['VLA', 'WAM', 'LLM agent'];
-const kindLabel = { VLA: 'VLA', WAM: 'WAM', agent: 'LLM agent', external: 'Claude · inferred placement' };
+// Two periods split at G0.5 (June 2026), where the SOTA pace changes most (the paper's Fig. 1 since 2026-11-25).
+const periodNames = ['Before G0.5', 'Since G0.5'];
+const kindLabel = { VLA: 'VLA', WAM: 'WAM', agent: 'LLM Agent', external: 'Claude · inferred placement' };
 const color = { blue: '#2455ad', marker: '#6883b8', teal: '#287c83' };
 const violinColors = ['#6aafb4', '#4c9ba2', '#41929a', '#37838a', '#277981'];
 const targets = [];
@@ -74,7 +75,7 @@ function drawAxes() {
   const mobileScale = document.querySelector('#mobile-scale');
   mobileScale.setAttribute('viewBox', `0 0 48 ${height}`);
   const edges = [firstYear, ...eras.breaks, forecast.cutoff, forecast.end];
-  const periods = ['vla', 'wam', 'agent', 'forecast'];
+  const periods = ['before', 'since', 'forecast'];
   periods.forEach((period, index) => {
     const left = x(edges[index]);
     const right = x(edges[index + 1]);
@@ -162,23 +163,21 @@ function drawFrontier() {
     return group;
   }
 
-  // One continuous line through the first SOTA of each era and the latest SOTA, so it bends at LingBot-VA and
-  // GPT-6-Astra; each era's pace runs to the next era's first SOTA (the agent era: to the latest SOTA).
-  eraNames.forEach((name, index) => {
+  // One continuous line through RT-1, G0.5 and the latest SOTA: it bends once, at G0.5, where the SOTA pace changes
+  // most. The first period's pace runs from RT-1 to G0.5, the second from G0.5 to the latest SOTA. As in the paper's
+  // Fig. 1, the two periods carry no names above the plot (only the forecast does).
+  const speedUp = eras.rates[1] / eras.rates[0];
+  periodNames.forEach((name, index) => {
     const start = index;
-    const last = index === eraNames.length - 1;
-    const group = addSegment(`frontier-${index}`, start, () => ({
-      title: `${name} era · SOTA frontier`,
+    const last = index === periodNames.length - 1;
+    addSegment(`frontier-${index}`, start, () => ({
+      title: `SOTA · ${name.toLowerCase()}`,
       summary: `+${elo(eras.rates[index])} per year`,
       preview: dateSpan(start),
       notes: [last
-        ? `The pace runs from this era’s first SOTA release to the latest one (${dateSpan(start)}).`
-        : `The pace runs from this era’s first SOTA release to the first of the ${eraNames[index + 1]} era (${dateSpan(start)}).`],
+        ? `The pace runs from G0.5 to the latest SOTA policy (${dateSpan(start)}), about ${number.format(speedUp)} times the pace before G0.5.`
+        : `The pace runs from RT-1 to G0.5 (${dateSpan(start)}). The line bends at G0.5, where the SOTA pace changes most.`],
     }));
-    const left = x(index === 0 ? firstYear : eras.breaks[index - 1]);
-    const right = x(index === 2 ? forecast.cutoff : eras.breaks[index]);
-    const cap = index === 0 ? 'VLA ERA' : index === 1 ? 'WAM' : 'AGENT';
-    label(cap, (left + right) / 2, 35, 'era-label target-label', 'middle', group);
   });
   return vlaHighlight;
 }
@@ -199,11 +198,11 @@ function drawForecast() {
     const inner = range(forecast.tasks.map(pace => predicted(year, pace)));
     const outer = range(forecast.tasksAndPolicies.map(pace => predicted(year, pace)));
     return {
-      title: `Frontier forecast · ${month(year)}`,
+      title: `SOTA forecast · ${month(year)}`,
       summary: elo(predicted(year)),
       preview: `95% interval: ${outer}`,
       notes: [`95% intervals: ${inner} with tasks resampled, and ${outer} with both tasks and policies resampled.`,
-        `The dashed line extends the agent-era pace of +${elo(forecast.pace)} per year from the final observed SOTA policy.`],
+        `The dashed line extends the pace since G0.5, +${elo(forecast.pace)} per year, from the final observed SOTA policy.`],
     };
   });
   const { group } = item;
@@ -229,7 +228,7 @@ function drawAnnotations() {
   const explainCrossing = () => ({
     title: 'RoboDojo’s saturation threshold',
     summary: `${elo(min)} · projected ${month(forecast.crossing)}`,
-    notes: ['At this threshold, the frontier reaches at least 50% expected score on 90% of RoboDojo’s test cases.',
+    notes: ['At this threshold, the SOTA policy reaches at least 50% expected score on 90% of RoboDojo’s test cases.',
       `The 95% interval for the projected crossing is ${forecast.crossingInterval.map(month).join(' to ')}.`],
   });
   const guide = target('robodojo-threshold', [forecastX, levelY], explainCrossing);
@@ -241,11 +240,12 @@ function drawAnnotations() {
   const { group } = target('desired-benchmark', [forecastX, (y(max) + levelY) / 2], () => ({
     title: 'Desired benchmark',
     summary: range(forecast.needed),
-    notes: [`If it launches around ${month(forecast.crossing)}, this is the difficulty range needed to keep distinguishing frontier policies for one more year at the agent-era pace.`],
+    notes: [`If it launches around ${month(forecast.crossing)}, this is the difficulty range needed to keep distinguishing SOTA policies for one more year at the pace since G0.5.`],
   }));
-  const stem = { stroke: color.teal, 'stroke-width': 2, 'stroke-linecap': 'round' };
+  // dashed stem with solid caps in the SOTA blue, as the paper's Fig. 1 draws the desired benchmark (2026-11-25)
+  const stem = { stroke: color.blue, 'stroke-width': 2, 'stroke-linecap': 'butt' };
   line(forecastX, y(max), forecastX, levelY, { ...stem, class: 'line-highlight', 'stroke-width': 12, 'stroke-opacity': .22 }, group);
-  line(forecastX, y(max), forecastX, levelY, stem, group);
+  line(forecastX, y(max), forecastX, levelY, { ...stem, 'stroke-dasharray': '5 3' }, group);
   line(forecastX, y(max), forecastX, levelY, { stroke: 'transparent', 'stroke-width': 20 }, group);
   line(forecastX - 5, y(max), forecastX + 5, y(max), stem, group);
   line(forecastX - 5, levelY, forecastX + 5, levelY, stem, group);
@@ -254,7 +254,7 @@ function drawAnnotations() {
 
 function drawPolicies() {
   const labels = {
-    RT_1: [8, -10, 'start'], Pi_05: [-5, -11, 'end'], LingBot_VA: [-4, -10, 'end'],
+    RT_1: [8, -10, 'start'], Pi_05: [-5, -11, 'end'], G05: [-12, -9, 'end'],
     WallX: [31, 15, 'start'], 'Fable 5.2': [8, -8, 'start'],
   };
   const ordered = [...policies].sort((a, b) => Number(Boolean(a.record)) - Number(Boolean(b.record)));
@@ -268,7 +268,7 @@ function drawPolicies() {
       if (external) {
         notes.push(`Placed on the existing scale using Anthropic’s reported RoboDojo score of ${(policy.benchmarkScore * 100).toFixed(1)}% (setting-specific level: ${elo(policy.benchmarkLevel)}). Excluded from fitting, the historical trend, and the forecast.`);
       } else {
-        if (policy.interval) notes.push(`95% interval for general ability: ${range(policy.interval)}.`);
+        if (policy.interval) notes.push(`95% interval for general capability: ${range(policy.interval)}.`);
         notes.push(`Evaluated on ${policy.benchmarks.join(', ')}.`);
       }
       return { title: policy.name, summary: `${elo(policy.elo)}${external ? ' · inferred' : status}`, notes };
@@ -479,7 +479,7 @@ function enableInteractions() {
 
 svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
 element('title', { id: 'plot-title' }, 'Robot policy progress and benchmark difficulty over time');
-element('desc', { id: 'plot-description' }, 'Interactive chart of 44 fitted policies, three inferred Claude placements, four benchmark difficulty distributions, the state-of-the-art frontier, and a projected frontier with uncertainty through 2029.');
+element('desc', { id: 'plot-description' }, 'Interactive chart of 44 fitted policies, three inferred Claude placements, four benchmark difficulty distributions, the SOTA line, which bends once at G0.5 in June 2026, and its forecast with uncertainty through 2029.');
 drawAxes();
 drawForecast();
 drawBenchmarks();

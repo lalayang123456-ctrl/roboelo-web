@@ -58,7 +58,7 @@ h1, h2, h3, p, figure { margin: 0; }
 
 .wide { max-width: var(--wide); width: calc(100% - 64px); margin-inline: auto; }
 .reading { max-width: var(--reading); width: calc(100% - 64px); margin-inline: auto; }
-.main-figure { --inset: 29px; --plot-blue: #eff6ff; --plot-forecast: #ebf3fe; border: 1px solid #dee5ee; border-radius: 13px; box-shadow: 0 8px 30px #1e3a5c08; }
+.main-figure { --inset: 29px; --plot-blue: #ebf3fe; --plot-forecast: #eff6ff; border: 1px solid #dee5ee; border-radius: 13px; box-shadow: 0 8px 30px #1e3a5c08; }
 .figure-header { padding: 24px var(--inset) 15px; display: flex; gap: 16px; justify-content: space-between; align-items: flex-end; }
 .eyebrow { color: var(--blue); font-weight: 700; font-size: .72rem; text-transform: uppercase; letter-spacing: .105em; }
 .figure-header h2 { margin-top: 5px; font-size: clamp(1.1rem, 2.1vw, 1.52rem); letter-spacing: -.034em; font-weight: 650; line-height: 1.22; }
@@ -69,9 +69,10 @@ h1, h2, h3, p, figure { margin: 0; }
 .plot-stage { min-width: var(--minimum-plot-width); }
 #elo-plot { width: 100%; height: auto; display: block; overflow: visible; font-family: var(--body); }
 .mobile-scale { display: none; }
-.plot-background.vla { fill: var(--plot-blue); }
-.plot-background.wam { fill: #eaf2fd; }
-.plot-background.agent { fill: #e4eefb; }
+/* two periods split at G0.5 (2026-11-25), tints as in the paper's Fig. 1: the first period takes the old forecast
+   tint, the forecast the old first-era tint (near white), the period since G0.5 the darkest */
+.plot-background.before { fill: var(--plot-blue); }
+.plot-background.since { fill: #e4eefb; }
 .plot-background.forecast { fill: var(--plot-forecast); }
 .forecast-band.outer { fill: #dae8fa; }
 .forecast-band.inner { fill: #c9dcf5; }
