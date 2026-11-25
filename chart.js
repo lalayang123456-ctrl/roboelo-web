@@ -6,7 +6,7 @@ const selection = document.querySelector('#selection');
 const selectionContent = document.querySelector('#selection-content');
 const clearButton = document.querySelector('#clear-selection');
 const touchOnly = matchMedia('(hover: none)');
-const { policies, benchmarks, eras, forecast } = figureData;
+const { policies, benchmarks, eras, forecast, benchTrend, predicted } = figureData;
 
 const width = 1060;
 const height = width * 9 / 16;
@@ -139,6 +139,26 @@ function drawBenchmarks() {
   });
 }
 
+// The benchmarks' trend, as in the paper's Fig. 1 (2026-11-25): a least-squares line through each benchmark's median
+// task difficulty against its release date, solid from LIBERO to RoboDojo and dashed after.
+function drawBenchTrend() {
+  const at = year => benchTrend.intercept + benchTrend.slope * year;
+  const end = Math.min(forecast.end, (eloMax - benchTrend.intercept) / benchTrend.slope);
+  const solid = [[x(benchTrend.start), y(at(benchTrend.start))], [x(benchTrend.end), y(at(benchTrend.end))]];
+  const dashed = [solid[1], [x(end), y(at(end))]];
+  const { group } = target('benchmark-trend', [(solid[0][0] + solid[1][0]) / 2, (solid[0][1] + solid[1][1]) / 2], () => ({
+    title: 'Benchmark median trend',
+    summary: `+${elo(benchTrend.slope)} per year`,
+    notes: ['A least-squares line through each benchmark’s median task difficulty against its release date; dashed after RoboDojo.',
+      `95% interval of the slope: ${number.format(benchTrend.slopeInterval[0])}–${number.format(benchTrend.slopeInterval[1])} Elo per year. Benchmarks rise about twice as fast as the average policy, but more slowly than the SOTA since G0.5.`],
+  }));
+  const style = { fill: 'none', stroke: color.teal, 'stroke-width': 1.6, 'stroke-linecap': 'round' };
+  path([...solid, dashed[1]], { ...style, class: 'line-highlight', 'stroke-width': 10, 'stroke-opacity': .2 }, group);
+  path(solid, style, group);
+  path(dashed, { ...style, 'stroke-width': 1.8, 'stroke-dasharray': '7 5' }, group);
+  path([...solid, dashed[1]], { ...style, stroke: 'transparent', 'stroke-width': 12 }, group);
+}
+
 function drawFrontier() {
   const points = eras.nodes.map(([year, score]) => [x(year), y(score)]);
   const style = { fill: 'none', stroke: color.blue, 'stroke-width': 2.5, 'stroke-linecap': 'round' };
@@ -234,7 +254,8 @@ function drawAnnotations() {
   const guide = target('robodojo-threshold', [forecastX, levelY], explainCrossing);
   line(guideX, levelY, plot.right, levelY, { stroke: '#7894ab', 'stroke-dasharray': '4 4', class: 'threshold-line' }, guide.group);
   line(guideX, levelY, plot.right, levelY, { stroke: 'transparent', 'stroke-width': '12' }, guide.group);
-  label('RoboDojo 90th percentile', plot.right - 8, levelY - 8, 'threshold-label target-label', 'end', guide.group);
+  // under the guide: the benchmarks' dashed trend crosses the space above it (2026-11-25)
+  label('RoboDojo 90th percentile', plot.right - 8, levelY + 15, 'threshold-label target-label', 'end', guide.group);
   element('circle', { cx: forecastX, cy: levelY, r: 7, fill: 'none', stroke: '#7894ab', 'stroke-width': 2, class: 'halo' }, undefined, guide.group);
 
   const { group } = target('desired-benchmark', [forecastX, (y(max) + levelY) / 2], () => ({
@@ -250,12 +271,29 @@ function drawAnnotations() {
   line(forecastX - 5, y(max), forecastX + 5, y(max), stem, group);
   line(forecastX - 5, levelY, forecastX + 5, levelY, stem, group);
   label('Desired benchmark', forecastX, y(max) - 10, 'annotation-label target-label', 'middle', group);
+
+  // the predicted benchmark on the benchmarks' trend: a solid teal bar, named under it (as in the paper's Fig. 1)
+  const [low, high] = predicted.range;
+  const px = x(predicted.x);
+  const pred = target('predicted-benchmark', [px, (y(low) + y(high)) / 2], () => ({
+    title: 'Predicted benchmark',
+    summary: range(predicted.range),
+    notes: [`If benchmarks keep rising at their own pace, the next one would arrive around ${month(predicted.release)}, one average release gap after RoboDojo, with tasks from ${range(predicted.range)} (10th–90th percentile, with RoboDojo’s spread).`,
+      `At the pace since G0.5, the SOTA policy would use it up around ${month(predicted.usedUp)}.`],
+  }));
+  const bar = { stroke: color.teal, 'stroke-width': 2, 'stroke-linecap': 'butt' };
+  line(px, y(high), px, y(low), { ...bar, class: 'line-highlight', 'stroke-width': 12, 'stroke-opacity': .22 }, pred.group);
+  line(px, y(high), px, y(low), bar, pred.group);
+  line(px, y(high), px, y(low), { stroke: 'transparent', 'stroke-width': 20 }, pred.group);
+  line(px - 5, y(high), px + 5, y(high), bar, pred.group);
+  line(px - 5, y(low), px + 5, y(low), bar, pred.group);
+  label('Predicted benchmark', px, y(low) + 20, 'annotation-label target-label', 'middle', pred.group);
 }
 
 function drawPolicies() {
   const labels = {
     RT_1: [8, -10, 'start'], Pi_05: [-5, -11, 'end'], G05: [-12, -9, 'end'],
-    WallX: [31, 15, 'start'], 'Fable 5.2': [8, -8, 'start'],
+    WallX: [31, 15, 'start'], 'Fable 5.2': [0, -13, 'middle'],
   };
   const ordered = [...policies].sort((a, b) => Number(Boolean(a.record)) - Number(Boolean(b.record)));
   for (const policy of ordered) {
@@ -479,10 +517,11 @@ function enableInteractions() {
 
 svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
 element('title', { id: 'plot-title' }, 'Robot policy progress and benchmark difficulty over time');
-element('desc', { id: 'plot-description' }, 'Interactive chart of 44 fitted policies, three inferred Claude placements, four benchmark difficulty distributions, the SOTA line, which bends once at G0.5 in June 2026, and its forecast with uncertainty through 2029.');
+element('desc', { id: 'plot-description' }, 'Interactive chart of 44 fitted policies, three inferred Claude placements, four benchmark difficulty distributions with the trend of their medians, the SOTA line, which bends once at G0.5 in June 2026, its forecast with uncertainty through 2029, and the predicted and desired next benchmarks.');
 drawAxes();
 drawForecast();
 drawBenchmarks();
+drawBenchTrend();
 const vlaFrontierHighlight = drawFrontier();
 drawAnnotations();
 drawPolicies();

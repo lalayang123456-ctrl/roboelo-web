@@ -61,13 +61,15 @@
         <span><i class="key frontier" aria-hidden="true"></i>SOTA</span>
         <span><i class="key forecast" aria-hidden="true"></i>Forecast</span>
         <span><i class="key violin" aria-hidden="true"></i>Benchmark tasks</span>
+        <span><i class="key bench-trend" aria-hidden="true"></i>Benchmark median</span>
+        <span><svg class="key future" width="20" height="13" viewBox="0 0 20 13" aria-hidden="true"><path d="M2 1h5M4.5 1v11M2 12h5" stroke="#287c83" stroke-width="1.6" fill="none"/><path d="M12 1h5M12 12h5" stroke="#2455ad" stroke-width="1.6" fill="none"/><path d="M14.5 1v11" stroke="#2455ad" stroke-width="1.6" stroke-dasharray="2.2 1.6" fill="none"/></svg>Future benchmark</span>
       </div>
       <div class="selection" id="selection" hidden>
         <div id="selection-content" aria-live="polite"></div>
         <button id="clear-selection" type="button" class="clear-button" aria-label="Clear selected chart item">×</button>
       </div>
       <noscript><p class="noscript">Enable JavaScript to explore the chart.</p></noscript>
-      <figcaption id="figure-caption">Policies are positioned by release date and general capability. Benchmark violins show task difficulty at release, with a line at the median. Dark markers indicate SOTA at release. The solid SOTA line bends once, at G0.5 (June 2026), where its pace changes most: about ten times faster since. The dashed line extends the pace since G0.5, with two 95% uncertainty bands.</figcaption>
+      <figcaption id="figure-caption">Policies are positioned by release date and general capability. Benchmark violins show task difficulty at release, with a line at the median. Dark markers indicate SOTA at release. The solid SOTA line bends once, at G0.5 (June 2026), where its pace changes most: about ten times faster since. The dashed line extends the pace since G0.5, with two 95% uncertainty bands. The teal line follows the benchmarks’ median difficulty; on it lies the predicted next benchmark (solid teal bar), while the dashed blue bar is the desired benchmark, the range needed to last a year once RoboDojo is used up.</figcaption>
     </figure>
 
     <section class="reading section" id="abstract" aria-labelledby="abstract-title">

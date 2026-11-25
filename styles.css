@@ -103,6 +103,7 @@ h1, h2, h3, p, figure { margin: 0; }
 .key.external::before { content: ''; display: block; width: 7px; height: 6px; margin: 2px 2px 0; background: white; clip-path: inherit; }
 .key.frontier, .key.forecast { width: 18px; height: 0; border-top: 2px solid var(--blue); }
 .key.forecast { border-top-style: dashed; }
+.key.bench-trend { width: 18px; height: 2px; background: linear-gradient(to right, #287c83 0 48%, transparent 48% 62%, #287c83 62% 82%, transparent 82%); }
 .key.violin { width: 12px; height: 9px; border-radius: 50%; border: 1px solid #38858a; background: #d6efed; }
 .main-figure > figcaption { border-top: 1px solid #edf0f5; padding: 13px var(--inset) 15px; }
 figcaption { color: var(--muted); font-size: .84rem; line-height: 1.55; }

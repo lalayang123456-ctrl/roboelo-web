@@ -64,10 +64,25 @@ def export():
                    benchmarkScore=claude_sources[row["name"]][1], benchmarkLevel=row["level"])
               for row in metadata["claude"]]
 
+    # The benchmarks' trend (least-squares line through the median task difficulty of each benchmark against its
+    # release date; solid between the first and the last benchmark, dashed after) and the predicted benchmark on it
+    # (one mean release gap after RoboDojo, 10th-90th percentile with RoboDojo's spread), as in the paper's Fig. 1.
+    # Like the paper, the predicted bar moves 0.1 yr right of the desired bar when the two dates nearly coincide.
+    years = [row["year"] for row in benchmarks]
+    slope, t_next = metadata["bench_k"], metadata["t_next"]
+    intercept = metadata["med_next"] - slope * t_next
+    x_trend = t_next if abs(t_next - metadata["t_need"]) >= 0.12 else metadata["t_need"] + 0.1
+    bench_trend = dict(slope=slope, intercept=intercept, slopeInterval=metadata["bench_k_ci"],
+                       start=min(years), end=max(years))
+    predicted = dict(release=t_next, x=x_trend, range=[metadata["next_trend"][0], metadata["next_trend"][2]],
+                     median=metadata["next_trend"][1], medianInterval=metadata["med_next_ci"],
+                     usedUp=metadata["t_trend_used"])
+
     assert len(policies) == 44 and sum(row["count"] for row in benchmarks) == 212
+    assert np.isclose(slope * t_next + intercept, metadata["next_trend"][1])
     assert {policy["id"] for policy in policies if policy["record"]} == records
     assert np.isclose(benchmarks[-1]["quantiles"][1], metadata["next_needed"][0])
-    data = dict(policies=policies + claude, benchmarks=benchmarks,
+    data = dict(policies=policies + claude, benchmarks=benchmarks, benchTrend=bench_trend, predicted=predicted,
                 eras=dict(breaks=list(figure.ERA_BREAKS), rates=metadata["k"],
                           nodes=list(zip(*metadata["nodes"]))),
                 forecast=dict(cutoff=figure.X_CUTOFF, x=metadata["x_end"], y=metadata["y_end"],
