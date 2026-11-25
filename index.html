@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="RoboElo measures the progress of robot manipulation policies and the difficulty of their benchmarks on one Elo scale.">
+  <meta name="description" content="Measuring the progress of robot manipulation policies and the difficulty of their benchmarks on one Elo scale.">
   <meta name="theme-color" content="#ffffff">
-  <title>RoboElo — How Much Has Embodied AI Progressed?</title>
+  <title>How Much Has Embodied AI Progressed?</title>
   <link rel="stylesheet" href="styles.css">
   <script defer src="assets/figure-data.js"></script>
   <script defer src="chart.js"></script>
@@ -14,7 +14,7 @@
   <a class="skip-link" href="#main">Skip to content</a>
   <header class="site-header">
     <div class="header-inner">
-      <a class="wordmark" href="#top"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>RoboElo</a>
+      <a class="wordmark" href="#top"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span><span class="wordmark-text">How Much Has Embodied AI Progressed?</span></a>
       <nav aria-label="Page sections">
         <a href="#abstract">Abstract</a>
         <a href="#findings">Findings</a>
@@ -75,8 +75,8 @@
     <section class="reading section" id="abstract" aria-labelledby="abstract-title">
       <h2 id="abstract-title">Abstract</h2>
       <p>
-        Robot manipulation policies are improving quickly, but each simulation benchmark distinguishes them within a limited range. Older benchmarks saturate, while on newer ones most policies reach only single-digit success rates. RoboElo links benchmarks through the policies they share, placing policy capabilities and task difficulties on one Elo scale and making comparisons across benchmarks and time possible.
-        We apply RoboElo to 44 policies released between December 2022 and October 2026 across LIBERO, SimplerEnv, RoboTwin 2.0, and RoboDojo, covering 212 test cases and 395,092 trials. On this scale, a policy released 8.5 months later has, on average, twice the odds of success on the same task. In the last six months, the best policy improved about five times as much as in an average six-month period since 2022, and since G0.5 (June 2026) the SOTA has risen about ten times as fast as before. Benchmark difficulty rises about twice as fast as average policy capability, but if the SOTA pace since G0.5 continues, RoboDojo could reach the paper’s saturation threshold by September 2027.
+        Robot manipulation policies are improving quickly, but each simulation benchmark distinguishes them within a limited range. Older benchmarks saturate, while on newer ones most policies reach only single-digit success rates. Our statistical framework links benchmarks through the policies they share, placing policy capabilities and task difficulties on one Elo scale and making comparisons across benchmarks and time possible.
+        We apply the framework to 44 policies released between December 2022 and October 2026 across LIBERO, SimplerEnv, RoboTwin 2.0, and RoboDojo, covering 212 test cases and 395,092 trials. On this scale, a policy released 8.5 months later has, on average, twice the odds of success on the same task. In the last six months, the best policy improved about five times as much as in an average six-month period since 2022, and since G0.5 (June 2026) the SOTA has risen about ten times as fast as before. Benchmark difficulty rises about twice as fast as average policy capability, but if the SOTA pace since G0.5 continues, RoboDojo could reach the paper’s saturation threshold by September 2027.
       </p>
     </section>
 
@@ -103,8 +103,8 @@
 
     <section class="section method" id="method" aria-labelledby="method-title">
       <div class="reading">
-        <h2 id="method-title">The RoboElo method</h2>
-        <p>RoboElo fits one model to per-task results across benchmarks. Policies evaluated on more than one benchmark link their scales. The model estimates each policy’s general capability, its adjustment for a particular setting, and the difficulty of each test case. When a policy’s level on a setting matches a task’s difficulty, its expected score is 50%.</p>
+        <h2 id="method-title">Methodology</h2>
+        <p>Our framework fits one model to per-task results across benchmarks. Policies evaluated on more than one benchmark link their scales. The model estimates each policy’s general capability, its adjustment for a particular setting, and the difficulty of each test case. When a policy’s level on a setting matches a task’s difficulty, its expected score is 50%.</p>
       </div>
       <figure class="method-figure wide">
         <img src="assets/roboelo-method.png" width="1940" height="632" alt="Three panels show sparse observed scores, one joint model filling in missing scores, and policy levels and task difficulties aligned on a single Elo scale." loading="lazy" decoding="async">
@@ -117,7 +117,7 @@
         <h2 id="bibtex-title">BibTeX</h2>
         <button type="button" class="button copy-button" id="copy-bibtex">Copy BibTeX</button>
       </div>
-      <pre><code id="bibtex-text">@unpublished{anonymous2026roboelo,
+      <pre><code id="bibtex-text">@unpublished{anonymous2026embodied,
   title = {How Much Has Embodied {AI} Progressed? A Meta-Analysis on
            Robot Manipulation Benchmarks vs. {VLA}, {WAM}, and {LLM} Agents},
   author = {{Anonymous Authors}},
@@ -129,7 +129,7 @@
   </main>
 
   <footer class="site-footer">
-    <div class="header-inner"><span>RoboElo</span><a href="#top">Back to top</a></div>
+    <div class="header-inner"><span>How Much Has Embodied AI Progressed?</span><a href="#top">Back to top</a></div>
   </footer>
 </body>
 </html>
