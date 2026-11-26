@@ -6,9 +6,9 @@
   <meta name="description" content="Measuring the progress of robot manipulation policies and the difficulty of their benchmarks on one Elo scale.">
   <meta name="theme-color" content="#ffffff">
   <title>How Much Has Embodied AI Progressed?</title>
-  <link rel="stylesheet" href="styles.css?v=20261125b">
-  <script defer src="assets/figure-data.js?v=20261125b"></script>
-  <script defer src="chart.js?v=20261125b"></script>
+  <link rel="stylesheet" href="styles.css?v=20261126a">
+  <script defer src="assets/figure-data.js?v=20261126a"></script>
+  <script defer src="chart.js?v=20261126a"></script>
 </head>
 <body id="top">
   <a class="skip-link" href="#main">Skip to content</a>
@@ -29,7 +29,23 @@
     <section class="hero" aria-labelledby="paper-title">
       <h1 id="paper-title">How Much Has Embodied<br class="desktop-break"> AI Progressed?</h1>
       <p class="subtitle">A Meta-Analysis on Robot Manipulation Benchmarks<br class="desktop-break"> vs. VLA, WAM, and LLM Agents</p>
-      <p class="authors">Anonymous Authors</p>
+      <p class="authors">
+        <span>Gang Yang<sup>1*</sup></span>
+        <span>Nigel Jian Wei Goh<sup>1*</sup></span>
+        <span>Shuo Sun<sup>2,3†</sup></span>
+        <span>Christina Dao Wen Lee<sup>1</sup></span>
+        <span>Xinru Wang<sup>2,3</sup></span>
+        <span>Alok Prakash<sup>2,3</sup></span>
+        <span>Chee Leong Teo<sup>1</sup></span>
+        <span>Marcelo H. Ang Jr.<sup>1</sup></span>
+        <span>Thomas W. Malone<sup>2,3</sup></span>
+      </p>
+      <p class="affiliations">
+        <span><sup>1</sup>Advanced Robotics Centre, National University of Singapore</span>
+        <span><sup>2</sup>Mens, Manus and Machina (M3S), Singapore-MIT Alliance for Research and Technology (SMART)</span>
+        <span><sup>3</sup>MIT Center for Collective Intelligence, Massachusetts Institute of Technology</span>
+      </p>
+      <p class="author-notes"><sup>*</sup>Equal contribution <span aria-hidden="true">·</span> <sup>†</sup>Corresponding author</p>
       <button class="button paper-link" type="button" disabled>
         <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3H6.5A1.5 1.5 0 0 0 5 4.5v15A1.5 1.5 0 0 0 6.5 21h11a1.5 1.5 0 0 0 1.5-1.5V9z"/><path d="M13 3v6h6M8.5 13.3h7m-7 3.2h5"/></svg>
         Paper <span>PDF</span>
@@ -58,7 +74,7 @@
         <span><i class="key dot" aria-hidden="true"></i>VLA</span>
         <span><i class="key square" aria-hidden="true"></i>WAM</span>
         <span><i class="key triangle" aria-hidden="true"></i>LLM Agent</span>
-        <span><i class="key external" aria-hidden="true"></i>Claude, inferred</span>
+        <span><i class="key external" aria-hidden="true"></i>LLM Agent (not fitted)</span>
         <span><i class="key frontier" aria-hidden="true"></i>SOTA</span>
         <span><i class="key forecast" aria-hidden="true"></i>Forecast</span>
         <span><i class="key violin" aria-hidden="true"></i>Benchmark tasks</span>
@@ -70,14 +86,20 @@
         <button id="clear-selection" type="button" class="clear-button" aria-label="Clear selected chart item">×</button>
       </div>
       <noscript><p class="noscript">Enable JavaScript to explore the chart.</p></noscript>
-      <figcaption id="figure-caption">Policies are positioned by release date and general capability. Benchmark violins show task difficulty at release, with a line at the median. Dark markers indicate SOTA at release. The solid SOTA line bends once, at G0.5 (June 2026), where its pace changes most: about ten times faster since. The dashed line extends the pace since G0.5, with two 95% uncertainty bands. The teal line follows the benchmarks’ median difficulty; on it lies the predicted next benchmark (solid teal bar), while the dashed blue bar is the desired benchmark, the range needed to last a year once RoboDojo is used up.</figcaption>
+      <figcaption id="figure-caption">Policies are positioned by release date and general capability. Benchmark violins show task difficulty at release, with a line at the median. Dark markers indicate SOTA at release. The solid SOTA line bends once, at G0.5 (June 2026), where its pace changes most: about ten times faster since. The dashed line extends the pace since G0.5, with its 95% CIs as bands. The teal line follows the benchmarks’ median difficulty; on it lies the predicted next benchmark (solid teal bar), while the dashed blue bar is the desired benchmark, the range needed to last a year once RoboDojo is saturated. Hollow triangles: LLM Agents placed from their reported RoboDojo scores, not fitted.</figcaption>
     </figure>
 
     <section class="reading section" id="abstract" aria-labelledby="abstract-title">
       <h2 id="abstract-title">Abstract</h2>
+      <!-- 2026-11-26: the paper's abstract (sections/0_abstract.tex), macros filled in; its last sentence points here -->
       <p>
-        Robot manipulation policies are improving quickly, but each simulation benchmark distinguishes them within a limited range. Older benchmarks saturate, while on newer ones most policies reach only single-digit success rates. Our statistical framework links benchmarks through the policies they share, placing policy capabilities and task difficulties on one Elo scale and making comparisons across benchmarks and time possible.
-        We apply the framework to 44 policies released between December 2022 and October 2026 across LIBERO, SimplerEnv, RoboTwin 2.0, and RoboDojo, covering 212 test cases and 395,092 trials. On this scale, a policy released 8.5 months later has, on average, twice the odds of success on the same task. In the last six months, the best policy improved about five times as much as in an average six-month period since 2022, and since G0.5 (June 2026) the SOTA has risen about ten times as fast as before. Benchmark difficulty rises about twice as fast as average policy capability, but if the SOTA pace since G0.5 continues, RoboDojo could reach the paper’s saturation threshold by September 2027.
+        Robot manipulation policies, from vision-language-action models (VLAs) and world-action models (WAMs) to, most recently, large language model (LLM) agents, now improve within months.
+        However, each benchmark separates them only over a narrow range: older benchmarks saturate, while on newer ones most policies score in the single digits, so policies evaluated on different benchmarks cannot be compared and the pace of progress cannot be measured.
+        We place policy capabilities and task difficulties from different benchmarks on one Elo scale, linking the benchmarks through the policies they share, as test linking does for exams in educational measurement; on this scale, a policy’s odds of success on a task are the ratio of its capability to the task’s difficulty.
+        Applied to 44 policies released between December 2022 and October 2026 on LIBERO, SimplerEnv, RoboTwin 2.0 and RoboDojo (212 test cases, 395,092 trials), the scale predicts a policy’s results on a benchmark hidden from the fit with an error of 6.8 points in mean score, against 11.9 for the per-task average.
+        On this unified scale, today’s best policy is about 18 times as capable as RT-1, and the best policy’s capability doubled every 21 months until June 2026 but every 2 months since.
+        The difficulty of new benchmarks grows about 8.5-fold a year (95% CI: 2–36; <i>R</i><sup>2</sup> = 0.88), more slowly than the best policy’s capability has grown since June 2026.
+        If that pace holds, the best policy will saturate RoboDojo, the hardest benchmark, around September 2027 (2028 or later at the pace of the last 6–12 months), and the tasks that remain hard, open-ended tasks in randomized scenes, are where the next benchmark should build.
       </p>
     </section>
 
@@ -94,17 +116,17 @@
           <article>
             <p class="finding-number">8.5 <span>months</span></p>
             <h4>Time for average odds to double</h4>
-            <p>Average policy capability has risen about 170 Elo per year since 2022: a policy released 8.5 months later has twice the odds of success on the same task, and a 50% expected score becomes about 73% a year later.</p>
+            <p>Average policy capability has risen about 170 Elo points per year since 2022: a policy released 8.5 months later has twice the odds of success on the same task, and a 50% expected score becomes about 73% a year later.</p>
           </article>
           <article>
             <p class="finding-number">~10<span>×</span></p>
             <h4>Faster SOTA gains since G0.5</h4>
-            <p>Since G0.5 (June 2026), the SOTA has risen about 730 Elo per year, ten times its pace before. In the last six months it gained about 280 Elo, against about 60 in an average six months.</p>
+            <p>Since G0.5 (June 2026), the SOTA has risen about 730 Elo points per year, ten times its pace before. In the last six months it gained about 280 Elo points, against about 60 in an average six months.</p>
           </article>
         </div>
       </div>
       <div class="findings-group" aria-labelledby="findings-benchmarks">
-        <h3 class="findings-group-title" id="findings-benchmarks">How fast benchmarks are conquered</h3>
+        <h3 class="findings-group-title" id="findings-benchmarks">How fast benchmarks saturate</h3>
         <div class="findings-grid">
           <article>
             <p class="finding-number">2023–24</p>
@@ -112,14 +134,14 @@
             <p>LIBERO and SimplerEnv, released in 2023 and 2024, were below the capability of the SOTA policies of their time; LIBERO, the first, was well below them.</p>
           </article>
           <article>
-            <p class="finding-number">370 <span>Elo/yr</span></p>
+            <p class="finding-number">370 <span>Elo points/yr</span></p>
             <h4>Benchmarks harden steadily</h4>
-            <p>The median difficulty of new benchmarks rises about 370 Elo per year, about twice as fast as the capability of the average policy, but more slowly than the SOTA since G0.5.</p>
+            <p>The median difficulty of new benchmarks rises about 370 Elo points per year, about twice as fast as the capability of the average policy, but more slowly than the SOTA since G0.5.</p>
           </article>
           <article>
             <p class="finding-number">Sep <span>2027</span></p>
-            <h4>RoboDojo likely conquered</h4>
-            <p>At the pace since G0.5, the best policy would score at least 50% on 90% of RoboDojo’s tasks around September 2027 (95%: April 2027 to January 2028). A harder benchmark is needed before then.</p>
+            <h4>RoboDojo likely saturated</h4>
+            <p>At the pace since G0.5, the best policy would score at least 50% on 90% of RoboDojo’s tasks around September 2027 (95% CI: April 2027–January 2028). A harder benchmark is needed before then.</p>
           </article>
         </div>
       </div>
@@ -132,7 +154,7 @@
       </div>
       <figure class="method-figure wide">
         <img src="assets/roboelo-method.png" width="1940" height="632" alt="Three panels show sparse observed scores, one joint model filling in missing scores, and policy levels and task difficulties aligned on a single Elo scale." loading="lazy" decoding="async">
-        <figcaption><strong>Figure 4.</strong> From sparse per-task results to one Elo scale. <a href="assets/roboelo-method.png" class="enlarge-method" target="_blank" rel="noopener">Open full-size figure<span class="sr-only"> (opens in a new tab)</span></a></figcaption>
+        <figcaption><strong>Figure 5.</strong> From sparse per-task results to one Elo scale. <a href="assets/roboelo-method.png" class="enlarge-method" target="_blank" rel="noopener">Open full-size figure<span class="sr-only"> (opens in a new tab)</span></a></figcaption>
       </figure>
     </section>
 
@@ -142,7 +164,7 @@
         <p>Each row pairs a policy with a benchmark task at about its level. Policies from different years and benchmarks share one axis: Octo (2024) sits at a SimplerEnv drawer task, WALL-OSS-1.0-lite (2026) at a RoboDojo pouring task, and on each such task the policy is expected to score about 50%.</p>
       </div>
       <figure class="table-figure wide" aria-labelledby="table-caption">
-        <figcaption id="table-caption"><strong>Table 2.</strong> Representative policies vs. benchmark tasks at similar capabilities. The top eight policies and eight more spread over the ranking, by rank among all 44 in general capability μ (95% interval). Task at this level: of the test cases the policy ran within 40 Elo of μ and scored 35–65% on, the one whose difficulty β is closest to μ; observed: the policy’s mean score on it. Ran: L = LIBERO, S = SimplerEnv, T = RoboTwin 2.0, D = RoboDojo.</figcaption>
+        <figcaption id="table-caption"><strong>Table 2.</strong> Representative policies vs. benchmark tasks of matching difficulty. The top eight policies and eight more spread over the ranking, by rank among all 44 in general capability μ (95% CI). Task at this level: of the test cases the policy ran within 40 Elo points of μ and scored 35–65% on, the one whose difficulty β is closest to μ; score: the policy’s observed mean score on it. Ran: L = LIBERO, S = SimplerEnv, T = RoboTwin 2.0, D = RoboDojo.</figcaption>
         <div class="table-scroll" tabindex="0" role="region" aria-label="Table 2, scrollable">
           <table class="policy-table">
             <thead>
@@ -152,10 +174,10 @@
                 <th scope="col">Type</th>
                 <th scope="col">Released</th>
                 <th scope="col">Ran</th>
-                <th scope="col" class="num">μ <span>(95% interval)</span></th>
+                <th scope="col" class="num">μ <span>(95% CI)</span></th>
                 <th scope="col">Task at this level</th>
                 <th scope="col" class="num">β</th>
-                <th scope="col" class="num">Observed</th>
+                <th scope="col" class="num">Score</th>
               </tr>
             </thead>
             <tbody>
@@ -172,7 +194,7 @@
               <tr><td class="num">15</td><th scope="row">π<sub>0.5</sub></th><td><i class="key dot" aria-hidden="true"></i>VLA</td><td>2025-04</td><td>LTD</td><td class="num">1762 <span>(1741–1790)</span></td><td>press stapler (T, randomized)</td><td class="num">1760</td><td class="num">63%</td></tr>
               <tr><td class="num">19</td><th scope="row">Xiaomi-R0</th><td><i class="key dot" aria-hidden="true"></i>VLA</td><td>2026-02</td><td>LSTD</td><td class="num">1713 <span>(1688–1744)</span></td><td>stack two bowls (T, randomized)</td><td class="num">1717</td><td class="num">53%</td></tr>
               <tr><td class="num">22</td><th scope="row">CogACT</th><td><i class="key dot" aria-hidden="true"></i>VLA</td><td>2024-11</td><td>S</td><td class="num">1698 <span>(1636–1772)</span></td><td>put carrot on plate (S)</td><td class="num">1675</td><td class="num">54%</td></tr>
-              <tr><td class="num">25</td><th scope="row">SpatialVLA</th><td><i class="key dot" aria-hidden="true"></i>VLA</td><td>2025-01</td><td>S</td><td class="num">1591 <span>(1480–1687)</span></td><td>put apple in drawer (S)</td><td class="num">1581</td><td class="num">44%</td></tr>
+              <tr><td class="num">26</td><th scope="row">RT-1</th><td><i class="key dot" aria-hidden="true"></i>VLA</td><td>2022-12</td><td>S</td><td class="num">1578 <span>(1528–1646)</span></td><td>put apple in drawer (S)</td><td class="num">1581</td><td class="num">53%</td></tr>
               <tr><td class="num">31</td><th scope="row">GR00T N1.5</th><td><i class="key dot" aria-hidden="true"></i>VLA</td><td>2025-05</td><td>LS</td><td class="num">1522 <span>(1480–1556)</span></td><td>put eggplant in basket (S)</td><td class="num">1507</td><td class="num">58%</td></tr>
               <tr><td class="num">35</td><th scope="row">π<sub>0</sub></th><td><i class="key dot" aria-hidden="true"></i>VLA</td><td>2024-10</td><td>LTD</td><td class="num">1460 <span>(1440–1483)</span></td><td>stack two blocks (T, clean)</td><td class="num">1480</td><td class="num">42%</td></tr>
               <tr><td class="num">41</td><th scope="row">OpenVLA</th><td><i class="key dot" aria-hidden="true"></i>VLA</td><td>2024-06</td><td>LS</td><td class="num">1302 <span>(1257–1341)</span></td><td>put bowl in top drawer (L)</td><td class="num">1276</td><td class="num">50%</td></tr>
@@ -189,12 +211,14 @@
         <h2 id="bibtex-title">BibTeX</h2>
         <button type="button" class="button copy-button" id="copy-bibtex">Copy BibTeX</button>
       </div>
-      <pre><code id="bibtex-text">@unpublished{anonymous2026embodied,
+      <pre><code id="bibtex-text">@unpublished{yang2026embodied,
   title = {How Much Has Embodied {AI} Progressed? A Meta-Analysis on
            Robot Manipulation Benchmarks vs. {VLA}, {WAM}, and {LLM} Agents},
-  author = {{Anonymous Authors}},
+  author = {Yang, Gang and Goh, Nigel Jian Wei and Sun, Shuo and
+            Lee, Christina Dao Wen and Wang, Xinru and Prakash, Alok and
+            Teo, Chee Leong and Ang, Jr., Marcelo H. and Malone, Thomas W.},
   year = {2026},
-  note = {Anonymous manuscript}
+  note = {Preprint}
 }</code></pre>
       <p class="sr-only" id="copy-status" aria-live="polite"></p>
     </section>

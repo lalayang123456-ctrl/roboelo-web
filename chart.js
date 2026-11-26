@@ -19,8 +19,9 @@ const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 const number = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 });
 const monthFormat = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
 const dateFormat = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
-const elo = value => `${number.format(value)} Elo`;
-const range = ([lo, hi]) => `${number.format(lo)}–${number.format(hi)} Elo`;
+// quantities in "Elo points", as in the paper (2026-11-26); the axis titles keep "Elo" for the scale itself
+const elo = value => `${number.format(value)} Elo points`;
+const range = ([lo, hi]) => `${number.format(lo)}–${number.format(hi)} Elo points`;
 const month = value => {
   const year = Math.floor(value);
   const start = Date.UTC(year, 0, 1);
@@ -29,7 +30,7 @@ const month = value => {
 const readableDate = value => (value.length > 7 ? dateFormat : monthFormat).format(new Date(value));
 // Two periods split at G0.5 (June 2026), where the SOTA pace changes most (the paper's Fig. 1 since 2026-11-25).
 const periodNames = ['Before G0.5', 'Since G0.5'];
-const kindLabel = { VLA: 'VLA', WAM: 'WAM', agent: 'LLM Agent', external: 'Claude · inferred placement' };
+const kindLabel = { VLA: 'VLA', WAM: 'WAM', agent: 'LLM Agent', external: 'LLM Agent · not fitted' };
 const color = { blue: '#2455ad', marker: '#6883b8', teal: '#287c83' };
 const violinColors = ['#6aafb4', '#4c9ba2', '#41929a', '#37838a', '#277981'];
 const targets = [];
@@ -116,10 +117,10 @@ function drawBenchmarks() {
     const rightWing = wing(right ? 1 : 0).reverse();
     path([...leftWing, ...rightWing], { closed: true, class: 'benchmark-shape', fill: tint, 'fill-opacity': '.17', stroke: tint, 'stroke-width': '1.35' }, group);
     const medianY = y(benchmark.median);
-    for (const [stroke, strokeWidth] of [['#fff', 3.5], [tint, 1.45]]) {
-      line(center - (left ? half : 0), medianY, center + (right ? half : 0), medianY,
-        { stroke, 'stroke-width': strokeWidth, 'pointer-events': 'none' }, group);
-    }
+    // no white underlay (2026-11-26, as in the paper's Fig. 1): it showed as white edges; the benchmarks' trend line,
+    // drawn later, runs over the median
+    line(center - (left ? half : 0), medianY, center + (right ? half : 0), medianY,
+      { stroke: tint, 'stroke-width': 1.45, 'pointer-events': 'none' }, group);
     const top = y(benchmark.density.at(-1)[0]);
     if (benchmark.side === 'both') {
       let labelY = top - 10;
@@ -150,7 +151,7 @@ function drawBenchTrend() {
     title: 'Benchmark median trend',
     summary: `+${elo(benchTrend.slope)} per year`,
     notes: ['A least-squares line through each benchmark’s median task difficulty against its release date; dashed after RoboDojo.',
-      `95% interval of the slope: ${number.format(benchTrend.slopeInterval[0])}–${number.format(benchTrend.slopeInterval[1])} Elo per year. Benchmarks rise about twice as fast as the average policy, but more slowly than the SOTA since G0.5.`],
+      `95% CI of the slope: ${number.format(benchTrend.slopeInterval[0])}–${number.format(benchTrend.slopeInterval[1])} Elo points per year. Benchmarks rise about twice as fast as the average policy, but more slowly than the SOTA since G0.5.`],
   }));
   const style = { fill: 'none', stroke: color.teal, 'stroke-width': 1.6, 'stroke-linecap': 'round' };
   path([...solid, dashed[1]], { ...style, class: 'line-highlight', 'stroke-width': 10, 'stroke-opacity': .2 }, group);
@@ -220,8 +221,8 @@ function drawForecast() {
     return {
       title: `SOTA forecast · ${month(year)}`,
       summary: elo(predicted(year)),
-      preview: `95% interval: ${outer}`,
-      notes: [`95% intervals: ${inner} with tasks resampled, and ${outer} with both tasks and policies resampled.`,
+      preview: `95% CI: ${outer}`,
+      notes: [`95% CIs: ${inner} with tasks resampled, and ${outer} with both tasks and policies resampled.`,
         `The dashed line extends the pace since G0.5, +${elo(forecast.pace)} per year, from the final observed SOTA policy.`],
     };
   });
@@ -249,7 +250,7 @@ function drawAnnotations() {
     title: 'RoboDojo’s saturation threshold',
     summary: `${elo(min)} · projected ${month(forecast.crossing)}`,
     notes: ['At this threshold, the SOTA policy reaches at least 50% expected score on 90% of RoboDojo’s test cases.',
-      `The 95% interval for the projected crossing is ${forecast.crossingInterval.map(month).join(' to ')}.`],
+      `The 95% CI for the projected crossing is ${forecast.crossingInterval.map(month).join('–')}.`],
   });
   const guide = target('robodojo-threshold', [forecastX, levelY], explainCrossing);
   line(guideX, levelY, plot.right, levelY, { stroke: '#7894ab', 'stroke-dasharray': '4 4', class: 'threshold-line' }, guide.group);
@@ -306,7 +307,7 @@ function drawPolicies() {
       if (external) {
         notes.push(`Placed on the existing scale using Anthropic’s reported RoboDojo score of ${(policy.benchmarkScore * 100).toFixed(1)}% (setting-specific level: ${elo(policy.benchmarkLevel)}). Excluded from fitting, the historical trend, and the forecast.`);
       } else {
-        if (policy.interval) notes.push(`95% interval for general capability: ${range(policy.interval)}.`);
+        if (policy.interval) notes.push(`95% CI for general capability: ${range(policy.interval)}.`);
         notes.push(`Evaluated on ${policy.benchmarks.join(', ')}.`);
       }
       return { title: policy.name, summary: `${elo(policy.elo)}${external ? ' · inferred' : status}`, notes };
@@ -318,11 +319,15 @@ function drawPolicies() {
     const r = policy.record ? 4.25 : 3.45;
     element('circle', { cx, cy, r: 9, fill: '#d4e4fa', stroke: color.blue, 'stroke-width': 1, class: 'halo' }, undefined, group);
     element('circle', { cx, cy, r: 7, fill: 'transparent', class: 'policy-hit' }, undefined, group);
-    const attrs = { fill, stroke: '#fff', 'stroke-width': 1.05, 'pointer-events': 'none' };
+    // translucent markers (2026-11-26, as in the paper's Fig. 1): policies that pile up show darker; the other
+    // policies lose their white ring, which hid the overlap; the SOTA keep a thin one against the SOTA line
+    const attrs = policy.record
+      ? { fill, 'fill-opacity': .8, stroke: '#fff', 'stroke-width': .8, 'pointer-events': 'none' }
+      : { fill, 'fill-opacity': .55, stroke: 'none', 'pointer-events': 'none' };
     if (policy.kind === 'VLA') element('circle', { cx, cy, r, ...attrs }, undefined, group);
     else if (policy.kind === 'WAM') element('rect', { x: cx - r, y: cy - r, width: r * 2, height: r * 2, rx: .6, ...attrs }, undefined, group);
     else path([[cx, cy - r - 1], [cx + r + .6, cy + r - .1], [cx - r - .6, cy + r - .1]],
-      { closed: true, ...attrs, ...(external ? { fill: '#fff', stroke: color.marker, 'stroke-width': 1.45 } : {}) }, group);
+      { closed: true, ...attrs, ...(external ? { fill: '#fff', 'fill-opacity': 1, stroke: color.marker, 'stroke-width': 1.45 } : {}) }, group);
 
     if (labels[policy.id]) {
       const [dx, dy, anchor] = labels[policy.id];
@@ -517,7 +522,7 @@ function enableInteractions() {
 
 svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
 element('title', { id: 'plot-title' }, 'Robot policy progress and benchmark difficulty over time');
-element('desc', { id: 'plot-description' }, 'Interactive chart of 44 fitted policies, three inferred Claude placements, four benchmark difficulty distributions with the trend of their medians, the SOTA line, which bends once at G0.5 in June 2026, its forecast with uncertainty through 2029, and the predicted and desired next benchmarks.');
+element('desc', { id: 'plot-description' }, 'Interactive chart of 44 fitted policies, three LLM Agents shown but not fitted, four benchmark difficulty distributions with the trend of their medians, the SOTA line, which bends once at G0.5 in June 2026, its forecast with uncertainty through 2029, and the predicted and desired next benchmarks.');
 drawAxes();
 drawForecast();
 drawBenchmarks();
