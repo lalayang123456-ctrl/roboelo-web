@@ -55,7 +55,8 @@ h1, h2, h3, h4, p, figure { margin: 0; }
 .author-notes { margin-top: 5px; font-size: .74rem; color: var(--quiet); }
 .button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 40px; padding: 7px 14px; border: 1px solid #d8e1ef; border-radius: 7px; background: #fff; color: #214580; font-size: .875rem; line-height: 1.35; font-weight: 650; cursor: pointer; }
 .button:hover { background: #f3f7fd; border-color: #b8c9e6; }
-.paper-link { margin-top: 15px; padding-inline: 13px; }
+.paper-links { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-top: 15px; }
+.paper-link { padding-inline: 13px; }
 .paper-link svg { width: 17px; height: 17px; }
 .paper-link span { color: var(--quiet); font-size: .72rem; font-weight: 650; letter-spacing: .035em; }
 .paper-link:disabled { color: #69788a; background: #f4f6f9; border-color: #e2e8f0; cursor: not-allowed; }
@@ -164,6 +165,7 @@ figcaption { color: var(--muted); font-size: .84rem; line-height: 1.55; }
 .citation-header h2 { margin: 0; }
 .citation pre { margin: 0; padding: 18px 21px; border: 1px solid var(--line); background: #f8fafc; border-radius: 8px; overflow: auto; font: .84rem/1.68 ui-monospace, Consolas, monospace; color: #334662; }
 .citation code { font: inherit; }
+.coming-soon { margin: 0; padding: 18px 21px; border: 1px dashed var(--line); background: #f8fafc; border-radius: 8px; color: var(--quiet); font-size: .95rem; }
 .site-footer { border-top: 1px solid var(--line); color: var(--muted); font-size: .875rem; }
 .site-footer .header-inner { min-height: 67px; }
 .site-footer span { color: var(--ink); font-weight: 675; }

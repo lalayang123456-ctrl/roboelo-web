@@ -16,7 +16,9 @@ const eloMax = 4400;
 const x = year => plot.left + (year - firstYear) * (plot.right - plot.left) / (forecast.end - firstYear);
 const y = elo => plot.bottom - elo * (plot.bottom - plot.top) / eloMax;
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
-const number = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 });
+// No thousands separator: every number formatted here is an Elo value (or small), and the paper writes Elo values
+// as 2078, never 2,078 (2026-11-27).
+const number = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0, useGrouping: false });
 const monthFormat = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
 const dateFormat = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
 // quantities in "Elo points", as in the paper (2026-11-26); the axis titles keep "Elo" for the scale itself
@@ -537,7 +539,8 @@ const bibtex = document.querySelector('#bibtex-text');
 const copyStatus = document.querySelector('#copy-status');
 let copyTimer;
 
-copyButton.addEventListener('click', async () => {
+// The BibTeX block is "Coming soon" for now (2026-11-27): no button, nothing to wire up.
+if (copyButton) copyButton.addEventListener('click', async () => {
   try {
     await navigator.clipboard.writeText(bibtex.textContent);
     copyButton.textContent = 'Copied';
